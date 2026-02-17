@@ -1,0 +1,43 @@
+﻿<h3>Todo</h3>
+
+@page "/todo"
+
+<h3>Todo</h3>
+
+<input class="form-control" placeholder="New task..." @bind="newItem" @bind:event="oninput" />
+
+<button class="btn btn-primary mt-2" 
+@onclick="AddItem" disabled="@string.IsNullOrWhiteSpace(newItem)">
+    Add
+</button>
+
+<ul class="mt-3">
+    @foreach (var item in items)
+    {
+        <li>
+            @item
+            <button class="btn btn-sm btn-outline-danger ms-2" @onclick="() => RemoveItem(item)">
+                Delete
+            </button>
+        </li>
+    }
+</ul>
+
+@code {
+    private string newItem = "";
+    private List<string> items = new();
+
+    private void AddItem()
+    {
+        if (string.IsNullOrWhiteSpace(newItem))
+            return;
+
+        items.Add(newItem.Trim());
+        newItem = "";
+    }
+
+    private void RemoveItem(string item)
+    {
+        items.Remove(item);
+    }
+}
