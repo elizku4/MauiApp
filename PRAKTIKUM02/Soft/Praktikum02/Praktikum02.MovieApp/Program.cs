@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Praktikum02.MovieApp.Data;
 using Praktikum02.MovieApp.Components;
 
 namespace Praktikum02.MovieApp
@@ -11,6 +13,10 @@ namespace Praktikum02.MovieApp
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddDbContext<MovieContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("MovieContext")
+        ?? "Data Source=movies.db"));
 
             var app = builder.Build();
 

@@ -1,0 +1,59 @@
+﻿@rendermode InteractiveServer
+@page "/movies/create"
+@using Praktikum02.MovieApp.Models
+@inject Praktikum02.MovieApp.Data.MovieContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Add movie</PageTitle>
+
+<h1>Add movie</h1>
+
+<EditForm Model="@_movie" FormName="CreateMovie" OnValidSubmit="@HandleValidSubmit">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <InputText class="form-control" @bind-Value="_movie.Title" />
+        <ValidationMessage For="@(() => _movie.Title)" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Release date</label>
+        <InputDate class="form-control" @bind-Value="_movie.ReleaseDate" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Genre</label>
+        <InputText class="form-control" @bind-Value="_movie.Genre" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Price</label>
+        <InputNumber class="form-control" @bind-Value="_movie.Price" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    private Movie _movie = new()
+    {
+        ReleaseDate = DateTime.Today
+    };
+
+    private async Task HandleValidSubmit()
+    {
+        Db.Movies.Add(_movie);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/movies");
+    }
+
+    private void Cancel()
+    {
+        Nav.NavigateTo("/movies");
+    }
+}
+}
