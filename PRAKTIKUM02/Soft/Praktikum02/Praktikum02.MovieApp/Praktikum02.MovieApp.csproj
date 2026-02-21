@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <AssemblyName>Praktikum02.MovieApp</AssemblyName>
+	  <RootNamespace>Praktikum02.MovieApp</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
