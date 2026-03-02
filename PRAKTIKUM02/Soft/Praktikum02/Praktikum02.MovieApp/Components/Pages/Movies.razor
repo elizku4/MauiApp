@@ -1,7 +1,9 @@
 ﻿@rendermode InteractiveServer
 @page "/movies"
 @using Microsoft.EntityFrameworkCore
-@using Praktikum02.MovieApp.Models
+@using Praktikum02.MovieApp.Components.Shared
+@using Praktikum02.MovieApp.Data
+@using Praktikum02.MovieApp.Data
 @inject Praktikum02.MovieApp.Data.MovieContext Db
 <PageTitle>Movies</PageTitle>
 
@@ -28,18 +30,14 @@ else
                 <th>Release</th>
                 <th>Genre</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var m in _movies)
-            {
-                <tr>
-                    <td>@m.Title</td>
-                    <td>@m.ReleaseDate.ToString("yyyy-MM-dd")</td>
-                    <td>@m.Genre</td>
-                    <td>@m.Price</td>
-                </tr>
-            }
+{
+    <MyMovieRow Movie="m" />
+}
         </tbody>
     </table>
 }

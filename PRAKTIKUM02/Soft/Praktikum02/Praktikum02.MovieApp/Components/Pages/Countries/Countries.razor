@@ -1,0 +1,57 @@
+﻿@rendermode InteractiveServer
+@page "/countries"
+
+@using Praktikum02.MovieApp.Data
+@using Microsoft.EntityFrameworkCore
+@inject MovieContext Db
+
+<h1>Countries</h1>
+
+<NavLink class="btn btn-primary" href="/countries/create">Add country</NavLink>
+
+@if (_countries is null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (_countries.Count == 0)
+{
+    <p>No countries yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ISO</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in _countries)
+            {
+                <tr>
+                    <td>@c.IsoCode</td>
+                    <td>@c.Name</td>
+                    <td class="text-nowrap">
+                        <NavLink class="btn btn-sm btn-primary me-1" href="@($"/countries/edit/{c.Id}")">Edit</NavLink>
+                        <NavLink class="btn btn-sm btn-secondary me-1" href="@($"/countries/details/{c.Id}")">Details</NavLink>
+                        <NavLink class="btn btn-sm btn-danger" href="@($"/countries/delete/{c.Id}")">Delete</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Country>? _countries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _countries = await Db.Countries
+            .AsNoTracking()
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+    }
+}

@@ -1,0 +1,47 @@
+﻿@rendermode InteractiveServer
+@page "/countries/edit/{id:int}"
+
+@using Praktikum02.MovieApp.Data
+@inject MovieContext Db
+@inject NavigationManager Nav
+
+<h1>Edit country</h1>
+
+@if (_country != null)
+{
+    <EditForm Model="_country" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label>ISO Code</label>
+            <InputText class="form-control" @bind-Value="_country.IsoCode" />
+        </div>
+
+        <div class="mb-3">
+            <label>Name</label>
+            <InputText class="form-control" @bind-Value="_country.Name" />
+        </div>
+
+        <button class="btn btn-success" type="submit">Save</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Country? _country;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _country = await Db.Countries.FindAsync(id);
+    }
+
+    private async Task Save()
+    {
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/countries");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/countries");
+}

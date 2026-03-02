@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Praktikum02.MovieApp.Models;
 
 namespace Praktikum02.MovieApp.Data;
 
@@ -12,4 +11,6 @@ public class MovieContext : DbContext
     }
 
     public DbSet<Movie> Movies => Set<Movie>();
+    public DbSet<Currency> Currencies { get; set; }
+    public DbSet<Country> Countries { get; set; }
 }

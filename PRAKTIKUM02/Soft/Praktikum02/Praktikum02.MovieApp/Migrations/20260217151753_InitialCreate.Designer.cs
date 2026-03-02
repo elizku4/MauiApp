@@ -20,7 +20,7 @@ namespace Praktikum02.MovieApp.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("Praktikum02.MovieApp.Models.Movie", b =>
+            modelBuilder.Entity("Praktikum02.MovieApp.Data.Movie", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

@@ -1,0 +1,19 @@
+﻿<div class="row mb-3">
+    <dt class="col-sm-2">@Label</dt>
+    <dd class="col-sm-10">
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            @Value
+        }
+    </dd>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

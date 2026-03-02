@@ -1,6 +1,8 @@
 ﻿@rendermode InteractiveServer
 @page "/movies/create"
-@using Praktikum02.MovieApp.Models
+@using Praktikum02.MovieApp.Components.Shared
+@using Praktikum02.MovieApp.Data
+@using Praktikum02.MovieApp.Data
 @inject Praktikum02.MovieApp.Data.MovieContext Db
 @inject NavigationManager Nav
 
@@ -12,28 +14,22 @@
 
     <DataAnnotationsValidator />
     <ValidationSummary />
-
-    <div class="mb-3">
-        <label class="form-label">Title</label>
+    <MyEditItem Label="Title">
         <InputText class="form-control" @bind-Value="_movie.Title" />
         <ValidationMessage For="@(() => _movie.Title)" />
-    </div>
+    </MyEditItem>
 
-    <div class="mb-3">
-        <label class="form-label">Release date</label>
+    <MyEditItem Label="Release date">
         <InputDate class="form-control" @bind-Value="_movie.ReleaseDate" />
-    </div>
+    </MyEditItem>
 
-    <div class="mb-3">
-        <label class="form-label">Genre</label>
+    <MyEditItem Label="Genre">
         <InputText class="form-control" @bind-Value="_movie.Genre" />
-    </div>
+    </MyEditItem>
 
-    <div class="mb-3">
-        <label class="form-label">Price</label>
+    <MyEditItem Label="Price">
         <InputNumber class="form-control" @bind-Value="_movie.Price" />
-    </div>
-
+    </MyEditItem>
     <button class="btn btn-success" type="submit">Save</button>
     <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
 </EditForm>

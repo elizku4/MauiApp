@@ -1,0 +1,43 @@
+﻿@rendermode InteractiveServer
+@page "/currencies/create"
+
+@using Praktikum02.MovieApp.Data
+@inject MovieContext Db
+@inject NavigationManager Nav
+
+<h1>Add currency</h1>
+
+<EditForm Model="@_currency" OnValidSubmit="@Save">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label>Code</label>
+        <InputText class="form-control" @bind-Value="_currency.Code" />
+    </div>
+
+    <div class="mb-3">
+        <label>Name</label>
+        <InputText class="form-control" @bind-Value="_currency.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Symbol</label>
+        <InputText class="form-control" @bind-Value="_currency.Symbol" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Save</button>
+    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    private Currency _currency = new();
+
+    private async Task Save()
+    {
+        Db.Currencies.Add(_currency);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/currencies");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/currencies");
+}
