@@ -1,0 +1,29 @@
+﻿@rendermode InteractiveServer
+@page "/countries/details/{id:int}"
+
+@using Praktikum02.Blasor.Data
+@inject MovieContext Db
+@inject NavigationManager Nav
+
+<h1>Country details</h1>
+
+@if (_country != null)
+{
+    <p><b>ISO Code:</b> @_country.IsoCode</p>
+    <p><b>Name:</b> @_country.Name</p>
+
+    <button class="btn btn-secondary" @onclick="Back">Back</button>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Country? _country;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _country = await Db.Countries.FindAsync(id);
+    }
+
+    private void Back() => Nav.NavigateTo("/countries");
+}

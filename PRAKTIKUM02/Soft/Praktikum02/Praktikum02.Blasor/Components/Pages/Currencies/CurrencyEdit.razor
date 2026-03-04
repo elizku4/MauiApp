@@ -1,0 +1,53 @@
+﻿@rendermode InteractiveServer
+@page "/currencies/edit/{id:int}"
+
+@using Praktikum02.Blasor.Data
+@using Microsoft.EntityFrameworkCore
+@inject MovieContext Db
+@inject NavigationManager Nav
+
+<h1>Edit currency</h1>
+
+@if (_currency != null)
+{
+    <EditForm Model="_currency" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label>Code</label>
+            <InputText class="form-control" @bind-Value="_currency.Code" />
+        </div>
+
+        <div class="mb-3">
+            <label>Name</label>
+            <InputText class="form-control" @bind-Value="_currency.Name" />
+        </div>
+
+        <div class="mb-3">
+            <label>Symbol</label>
+            <InputText class="form-control" @bind-Value="_currency.Symbol" />
+        </div>
+
+        <button class="btn btn-success" type="submit">Save</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Currency? _currency;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currency = await Db.Currencies.FindAsync(id);
+    }
+
+    private async Task Save()
+    {
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/currencies");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/currencies");
+}

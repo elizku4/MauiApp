@@ -1,0 +1,39 @@
+﻿@rendermode InteractiveServer
+@page "/currencies/delete/{id:int}"
+
+@using Praktikum02.Blasor.Data
+@inject MovieContext Db
+@inject NavigationManager Nav
+
+<h1>Delete currency</h1>
+
+@if (_currency != null)
+{
+    <p>Delete <b>@_currency.Code</b> - @_currency.Name ?</p>
+
+    <button class="btn btn-danger" @onclick="Delete">Delete</button>
+    <button class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Currency? _currency;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currency = await Db.Currencies.FindAsync(id);
+    }
+
+    private async Task Delete()
+    {
+        if (_currency != null)
+        {
+            Db.Currencies.Remove(_currency);
+            await Db.SaveChangesAsync();
+        }
+        Nav.NavigateTo("/currencies");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/currencies");
+}
