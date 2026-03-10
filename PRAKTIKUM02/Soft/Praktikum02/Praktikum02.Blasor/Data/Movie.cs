@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Praktikum02.Blasor.Data;
 
-public class Movie
+public class Movie : DetailedEntity
 {
-    public int Id { get; set; }
-
     [Required]
     public string Title { get; set; } = "";
 

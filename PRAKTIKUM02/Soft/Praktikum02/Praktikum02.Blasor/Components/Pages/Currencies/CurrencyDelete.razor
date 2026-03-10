@@ -1,5 +1,5 @@
 ﻿@rendermode InteractiveServer
-@page "/currencies/delete/{id:int}"
+@page "/currencies/delete/{id:guid}"
 
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
@@ -16,7 +16,7 @@
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public Guid id { get; set; }
 
     private Currency? _currency;
 

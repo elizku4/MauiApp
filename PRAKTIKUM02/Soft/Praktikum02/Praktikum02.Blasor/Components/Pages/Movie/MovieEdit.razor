@@ -1,5 +1,5 @@
 ﻿@rendermode InteractiveServer
-@page "/movies/edit/{id:int}"
+@page "/movies/edit/{id:guid}"
 @using Microsoft.EntityFrameworkCore
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
@@ -43,7 +43,7 @@ else
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public Guid id { get; set; }
 
     private Movie? _movie;
 

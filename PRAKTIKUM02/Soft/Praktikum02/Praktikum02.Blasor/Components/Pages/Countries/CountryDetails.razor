@@ -1,5 +1,5 @@
 ﻿@rendermode InteractiveServer
-@page "/countries/details/{id:int}"
+@page "/countries/details/{id:guid}"
 
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
@@ -9,14 +9,14 @@
 
 @if (_country != null)
 {
-    <p><b>ISO Code:</b> @_country.IsoCode</p>
+    <p><b>Code:</b> @_country.Code</p>
     <p><b>Name:</b> @_country.Name</p>
 
     <button class="btn btn-secondary" @onclick="Back">Back</button>
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public Guid id { get; set; }
 
     private Country? _country;
 

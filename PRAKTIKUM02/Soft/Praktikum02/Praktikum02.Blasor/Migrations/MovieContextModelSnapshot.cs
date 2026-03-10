@@ -30,10 +30,6 @@ namespace Praktikum02.Blasor.Migrations
                     b.Property<string>("Details")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IsoCode")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -88,9 +84,12 @@ namespace Praktikum02.Blasor.Migrations
 
             modelBuilder.Entity("Praktikum02.Blasor.Data.Movie", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Genre")
                         .IsRequired()
@@ -102,8 +101,17 @@ namespace Praktikum02.Blasor.Migrations
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<byte[]>("Timestamp")
+                        .HasColumnType("BLOB");
+
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ValidTo")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

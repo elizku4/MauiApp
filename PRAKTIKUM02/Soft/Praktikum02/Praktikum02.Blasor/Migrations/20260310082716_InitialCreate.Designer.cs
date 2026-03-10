@@ -11,8 +11,8 @@ using Praktikum02.Blasor.Data;
 namespace Praktikum02.Blasor.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20260304180427_AddNamedEntityCode")]
-    partial class AddNamedEntityCode
+    [Migration("20260310082716_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,10 +31,6 @@ namespace Praktikum02.Blasor.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Details")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IsoCode")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -91,9 +87,12 @@ namespace Praktikum02.Blasor.Migrations
 
             modelBuilder.Entity("Praktikum02.Blasor.Data.Movie", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Genre")
                         .IsRequired()
@@ -105,8 +104,17 @@ namespace Praktikum02.Blasor.Migrations
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<byte[]>("Timestamp")
+                        .HasColumnType("BLOB");
+
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ValidTo")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

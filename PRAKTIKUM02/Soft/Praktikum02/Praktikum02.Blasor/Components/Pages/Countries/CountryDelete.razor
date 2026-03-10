@@ -1,5 +1,5 @@
 ﻿@rendermode InteractiveServer
-@page "/countries/delete/{id:int}"
+@page "/countries/delete/{id:guid}"
 
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
@@ -9,14 +9,14 @@
 
 @if (_country != null)
 {
-    <p>Delete <b>@_country.IsoCode</b> - @_country.Name ?</p>
+    <p>Delete <b>@_country.Code</b> - @_country.Name ?</p>
 
     <button class="btn btn-danger" @onclick="Delete">Delete</button>
     <button class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public Guid id { get; set; }
 
     private Country? _country;
 

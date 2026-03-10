@@ -7,33 +7,31 @@ using System.Threading.Tasks;
 
 namespace Praktikum02.Blasor.Tests
 {
-    
     [TestClass]
-    public sealed class CurrencyTests : BaseTests<Currency>
+    public sealed class MovieTests : BaseTests<Movie>
     {
         [TestMethod]
-        public void NameTest()
+        public void TitleTest()
         {
             Assert.IsNotNull(obj);
-            obj.Name = "Euro";
-            Assert.AreEqual("Euro", obj.Name);
+            obj.Title = "Fight Club";
+            Assert.AreEqual("Fight Club", obj.Title);
         }
 
         [TestMethod]
-        public void CodeTest()
+        public void GenreTest()
         {
             Assert.IsNotNull(obj);
-            obj.Code = "EUR";
-            Assert.AreEqual("EUR", obj.Code);
+            obj.Genre = "Drama";
+            Assert.AreEqual("Drama", obj.Genre);
         }
-
         [TestMethod]
-        public void SymbolTest()
+        public void PriceTest()
         {
             Assert.IsNotNull(obj);
-            obj.Symbol = "€";
-            Assert.AreEqual("€", obj.Symbol);
+            obj.Price = 63m;
+            Assert.AreEqual(63m, obj.Price);
         }
     }
-}
 
+    }

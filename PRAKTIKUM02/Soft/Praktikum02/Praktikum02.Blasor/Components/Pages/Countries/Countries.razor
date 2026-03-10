@@ -31,7 +31,7 @@ else
             @foreach (var c in _countries)
             {
                 <tr>
-                    <td>@c.IsoCode</td>
+                    <td>@c.Code</td>
                     <td>@c.Name</td>
                     <td class="text-nowrap">
                         <NavLink class="btn btn-sm btn-primary me-1" href="@($"/countries/edit/{c.Id}")">Edit</NavLink>

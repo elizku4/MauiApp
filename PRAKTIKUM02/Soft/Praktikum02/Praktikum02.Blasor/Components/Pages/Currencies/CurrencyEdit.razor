@@ -1,5 +1,5 @@
 ﻿@rendermode InteractiveServer
-@page "/currencies/edit/{id:int}"
+@page "/currencies/edit/{id:guid}"
 
 @using Praktikum02.Blasor.Data
 @using Microsoft.EntityFrameworkCore
@@ -34,7 +34,7 @@
 }
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public Guid id { get; set; }
 
     private Currency? _currency;
 
