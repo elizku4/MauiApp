@@ -2,6 +2,7 @@
 @page "/movies/create"
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
+@using Praktikum02.Aids
 @inject Praktikum02.Blasor.Data.MovieContext Db
 @inject NavigationManager Nav
 
@@ -9,36 +10,54 @@
 
 <h1>Add movie</h1>
 
-<EditForm Model="@_movie" FormName="CreateMovie" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@_movie" FormName="CreateMovie" OnSubmit="@HandleValidSubmit">
 
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <MyEditItem Label="Title">
-        <InputText class="form-control" @bind-Value="_movie.Title" />
-        <ValidationMessage For="@(() => _movie.Title)" />
-    </MyEditItem>
+    @foreach (var prop in adapter.Properties)
+    {
+        if (prop.PropInfo.Name == "Id"
+        || prop.PropInfo.Name == "Timestamp"
+        || prop.PropInfo.Name == "ValidTo"
+        || prop.PropInfo.Name == "ValidFrom")
+            continue;
 
-    <MyEditItem Label="Release date">
-        <InputDate class="form-control" @bind-Value="_movie.ReleaseDate" />
-    </MyEditItem>
+        <div class="mb-3">
+            <label>@prop.PropInfo.Name</label>
 
-    <MyEditItem Label="Genre">
-        <InputText class="form-control" @bind-Value="_movie.Genre" />
-    </MyEditItem>
-
-    <MyEditItem Label="Price">
-        <InputNumber class="form-control" @bind-Value="_movie.Price" />
-    </MyEditItem>
+            @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
+            {
+                <input class="form-control"
+                       value="@prop.PropValue"
+                       @onchange="e =>
+                       {
+                           if (DateTime.TryParse(e.Value?.ToString(), out var dt))
+                               prop.SetValue(dt);
+                       }" />
+            }
+            else if (prop.PropType == typeof(decimal) || prop.PropType == typeof(decimal?))
+            {
+                <input type="number" class="form-control"
+                       value="@prop.PropValue"
+                       @onchange="e =>
+                       {
+                           if (decimal.TryParse(e.Value?.ToString(), out var d))
+                               prop.SetValue(d);
+                       }" />
+            }
+            else
+            {
+                <input class="form-control"
+                       value="@prop.PropValue"
+                       @onchange="e => prop.SetValue(e.Value?.ToString())" />
+            }
+        </div>
+    }
     <button class="btn btn-success" type="submit">Save</button>
     <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
 </EditForm>
 
 @code {
-    private Movie _movie = new()
-    {
-        ReleaseDate = DateTime.Today
-    };
-
     private async Task HandleValidSubmit()
     {
         Db.Movies.Add(_movie);
@@ -50,5 +69,17 @@
     {
         Nav.NavigateTo("/movies");
     }
+    private Movie _movie;
+    private EditorAdapter adapter;
+
+    protected override void OnInitialized()
+    {
+        _movie = new Movie
+        {
+            ReleaseDate = DateTime.Today
+        };
+
+        adapter = new EditorAdapter(_movie);
+    }
 }
-}
+

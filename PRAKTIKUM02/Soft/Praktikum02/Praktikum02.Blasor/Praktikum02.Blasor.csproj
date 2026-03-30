@@ -25,4 +25,8 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Praktikum02.Aids\Praktikum02.Aids.csproj" />
+  </ItemGroup>
+
 </Project>

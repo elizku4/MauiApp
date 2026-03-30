@@ -1,38 +1,60 @@
 ﻿@rendermode InteractiveServer
 @page "/currencies/create"
-
+@using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
 @inject NavigationManager Nav
 
 <h1>Add currency</h1>
 
-<EditForm Model="@_currency" OnValidSubmit="@Save">
-    <DataAnnotationsValidator />
+<EditForm Model="@_currency" OnSubmit="@HandleSubmit">
 
-    <div class="mb-3">
-        <label>Code</label>
-        <InputText class="form-control" @bind-Value="_currency.Code" />
-    </div>
+    @foreach (var prop in adapter.Properties)
+    {
+        if (prop.PropInfo.Name == "Id"
+        || prop.PropInfo.Name == "Timestamp"
+        || prop.PropInfo.Name == "ValidFrom"
+        || prop.PropInfo.Name == "ValidTo")
+            continue;
 
-    <div class="mb-3">
-        <label>Name</label>
-        <InputText class="form-control" @bind-Value="_currency.Name" />
-    </div>
+        <div class="mb-3">
+            <label>@prop.PropInfo.Name</label>
 
-    <div class="mb-3">
-        <label>Symbol</label>
-        <InputText class="form-control" @bind-Value="_currency.Symbol" />
-    </div>
+            @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
+            {
+                <input class="form-control"
+                       value="@prop.PropValue"
+                       @onchange="e =>
+                       {
+                           if (DateTime.TryParse(e.Value?.ToString(), out var dt))
+                               prop.SetValue(dt);
+                       }" />
+            }
+            else
+            {
+                <input class="form-control"
+                       value="@prop.PropValue"
+                       @onchange="e => prop.SetValue(e.Value?.ToString())" />
+            }
+        </div>
+    }
 
     <button class="btn btn-success" type="submit">Save</button>
     <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
+
 </EditForm>
 
 @code {
-    private Currency _currency = new();
+    private Currency _currency;
+    private EditorAdapter adapter;
 
-    private async Task Save()
+    protected override void OnInitialized()
+    {
+        _currency = new Currency();
+        adapter = new EditorAdapter(_currency);
+    }
+
+    private async Task HandleSubmit()
     {
         Db.Currencies.Add(_currency);
         await Db.SaveChangesAsync();

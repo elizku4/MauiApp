@@ -1,6 +1,6 @@
 ﻿@rendermode InteractiveServer
 @page "/countries/create"
-
+@using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
 @inject NavigationManager Nav
@@ -10,16 +10,21 @@
 <EditForm Model="_country" OnValidSubmit="Save">
     <DataAnnotationsValidator />
 
-    <div class="mb-3">
-        <label>Code</label>
-        <InputText class="form-control" @bind-Value="_country.Code" />
-    </div>
+    @foreach (var prop in adapter.Properties)
+    {
+        if (prop.PropInfo.Name == "Id"
+        || prop.PropInfo.Name == "Timestamp"
+        || prop.PropInfo.Name == "ValidTo"
+        || prop.PropInfo.Name == "ValidFrom")
+            continue;
 
-    <div class="mb-3">
-        <label>Name</label>
-        <InputText class="form-control" @bind-Value="_country.Name" />
-    </div>
-
+        <div class="mb-3">
+            <label>@prop.PropInfo.Name</label>
+            <input class="form-control"
+                   value="@prop.PropValue"
+                   @onchange="e => prop.SetValue(e.Value?.ToString())" />
+        </div>
+    }
     <button class="btn btn-success" type="submit">Save</button>
     <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
 </EditForm>
@@ -35,4 +40,10 @@
     }
 
     private void Cancel() => Nav.NavigateTo("/countries");
+    
+    private EditorAdapter adapter;
+    protected override void OnInitialized()
+    {
+        adapter = new EditorAdapter(_country);
+    }
 }

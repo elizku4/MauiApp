@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Praktikum02.Aids\Praktikum02.Aids.csproj" />
     <ProjectReference Include="..\Praktikum02.Blasor\Praktikum02.Blasor.csproj" />
   </ItemGroup>
 

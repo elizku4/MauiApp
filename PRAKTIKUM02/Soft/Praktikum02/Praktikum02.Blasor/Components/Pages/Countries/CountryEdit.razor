@@ -1,5 +1,6 @@
 ﻿@rendermode InteractiveServer
 @page "/countries/edit/{id:guid}"
+@using Praktikum02.Aids
 
 @using Praktikum02.Blasor.Data
 @inject MovieContext Db
@@ -12,15 +13,27 @@
     <EditForm Model="_country" OnValidSubmit="Save">
         <DataAnnotationsValidator />
 
-        <div class="mb-3">
-            <label>Code</label>
-            <InputText class="form-control" @bind-Value="_country.Code" />
-        </div>
+        @foreach (var prop in adapter.Properties)
+        {
+            if (prop.PropInfo.Name == "Id" || prop.PropInfo.Name == "Timestamp")
+                continue;
 
-        <div class="mb-3">
-            <label>Name</label>
-            <InputText class="form-control" @bind-Value="_country.Name" />
-        </div>
+            <div class="mb-3">
+                <label>@prop.PropInfo.Name</label>
+                @if (prop.PropType == typeof(DateTime))
+                {
+                    <input class="form-control"
+                           value="@prop.PropValue"
+                           @onchange="e => prop.SetValue(DateTime.Parse(e.Value.ToString()))" />
+                }
+                else
+                {
+                    <input class="form-control"
+                           value="@prop.PropValue"
+                           @onchange="e => prop.SetValue(e.Value?.ToString())" />
+                }
+            </div>
+        }
 
         <button class="btn btn-success" type="submit">Save</button>
         <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
@@ -35,6 +48,11 @@
     protected override async Task OnInitializedAsync()
     {
         _country = await Db.Countries.FindAsync(id);
+
+        if (_country != null)
+        {
+            adapter = new EditorAdapter(_country);
+        }
     }
 
     private async Task Save()
@@ -44,4 +62,5 @@
     }
 
     private void Cancel() => Nav.NavigateTo("/countries");
+    private EditorAdapter adapter;
 }
