@@ -3,8 +3,8 @@
 
 @using Praktikum02.Blasor.Data
 @using Microsoft.EntityFrameworkCore
-@inject MovieContext Db
-
+@using Praktikum02.Blasor.Domain
+@inject ICountriesRepo repo
 <h1>Countries</h1>
 
 <NavLink class="btn btn-primary" href="/countries/create">Add country</NavLink>
@@ -49,9 +49,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _countries = await Db.Countries
-            .AsNoTracking()
-            .OrderBy(c => c.Name)
-            .ToListAsync();
+        _countries = (await repo.GetOrderedAsync()).ToList();
     }
 }

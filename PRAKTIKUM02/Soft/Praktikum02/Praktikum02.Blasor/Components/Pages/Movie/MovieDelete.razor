@@ -3,7 +3,8 @@
 @using Microsoft.EntityFrameworkCore
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
-@inject Praktikum02.Blasor.Data.MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject IMoviesRepo repo
 @inject NavigationManager Nav
 
 <PageTitle>Delete movie</PageTitle>
@@ -32,20 +33,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _movie = await Db.Movies.FirstOrDefaultAsync(m => m.Id == id);
+        _movie = await repo.GetAsync(id);
     }
 
     private async Task Delete()
     {
-        if (_movie != null)
-        {
-            Db.Movies.Remove(_movie);
-            await Db.SaveChangesAsync();
-        }
-
+        await repo.DeleteAsync(id);
         Nav.NavigateTo("/movies");
     }
-
     private void Back()
     {
         Nav.NavigateTo("/movies");

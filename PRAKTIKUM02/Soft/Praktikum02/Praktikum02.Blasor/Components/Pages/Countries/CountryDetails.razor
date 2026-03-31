@@ -2,7 +2,8 @@
 @page "/countries/details/{id:guid}"
 
 @using Praktikum02.Blasor.Data
-@inject MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICountriesRepo repo
 @inject NavigationManager Nav
 
 <h1>Country details</h1>
@@ -22,7 +23,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _country = await Db.Countries.FindAsync(id);
+        _country = await repo.GetAsync(id);
     }
 
     private void Back() => Nav.NavigateTo("/countries");

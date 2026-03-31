@@ -2,12 +2,13 @@
 @page "/countries/create"
 @using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
-@inject MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICountriesRepo repo
 @inject NavigationManager Nav
 
 <h1>Add country</h1>
 
-<EditForm Model="_country" OnValidSubmit="Save">
+<EditForm Model="_country" OnSubmit="Save">
     <DataAnnotationsValidator />
 
     @foreach (var prop in adapter.Properties)
@@ -34,8 +35,7 @@
 
     private async Task Save()
     {
-        Db.Countries.Add(_country);
-        await Db.SaveChangesAsync();
+        await repo.CreateAsync(_country);
         Nav.NavigateTo("/countries");
     }
 

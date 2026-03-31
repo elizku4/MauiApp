@@ -2,7 +2,8 @@
 @page "/currencies/create"
 @using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
-@inject MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICurrenciesRepo repo
 @inject NavigationManager Nav
 
 <h1>Add currency</h1>
@@ -56,8 +57,7 @@
 
     private async Task HandleSubmit()
     {
-        Db.Currencies.Add(_currency);
-        await Db.SaveChangesAsync();
+        await repo.CreateAsync(_currency);
         Nav.NavigateTo("/currencies");
     }
 

@@ -3,14 +3,15 @@
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Aids
-@inject Praktikum02.Blasor.Data.MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject IMoviesRepo repo
 @inject NavigationManager Nav
 
 <PageTitle>Add movie</PageTitle>
 
 <h1>Add movie</h1>
 
-<EditForm Model="@_movie" FormName="CreateMovie" OnSubmit="@HandleValidSubmit">
+<EditForm Model="@_movie" FormName="CreateMovie" OnSubmit="@HandleSubmit">
 
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -58,10 +59,9 @@
 </EditForm>
 
 @code {
-    private async Task HandleValidSubmit()
+    private async Task HandleSubmit()
     {
-        Db.Movies.Add(_movie);
-        await Db.SaveChangesAsync();
+        await repo.CreateAsync(_movie);
         Nav.NavigateTo("/movies");
     }
 
@@ -69,6 +69,7 @@
     {
         Nav.NavigateTo("/movies");
     }
+
     private Movie _movie;
     private EditorAdapter adapter;
 

@@ -3,19 +3,21 @@
 @using Praktikum02.Aids
 
 @using Praktikum02.Blasor.Data
-@inject MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICountriesRepo repo
 @inject NavigationManager Nav
 
 <h1>Edit country</h1>
 
 @if (_country != null)
 {
-    <EditForm Model="_country" OnValidSubmit="Save">
+    <EditForm Model="_country" OnVSubmit="Save">
         <DataAnnotationsValidator />
 
         @foreach (var prop in adapter.Properties)
         {
-            if (prop.PropInfo.Name == "Id" || prop.PropInfo.Name == "Timestamp")
+            if (prop.PropInfo.Name == "Id" || prop.PropInfo.Name == "Timestamp" || prop.PropInfo.Name == "ValidFrom" ||
+            prop.PropInfo.Name == "ValidTo")
                 continue;
 
             <div class="mb-3">
@@ -47,8 +49,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _country = await Db.Countries.FindAsync(id);
-
+        _country = await repo.GetAsync(id);
         if (_country != null)
         {
             adapter = new EditorAdapter(_country);
@@ -57,7 +58,7 @@
 
     private async Task Save()
     {
-        await Db.SaveChangesAsync();
+        await repo.UpdateAsync(_country);
         Nav.NavigateTo("/countries");
     }
 

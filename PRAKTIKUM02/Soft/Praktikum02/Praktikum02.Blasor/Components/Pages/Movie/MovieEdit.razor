@@ -3,7 +3,8 @@
 @using Microsoft.EntityFrameworkCore
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
-@inject Praktikum02.Blasor.Data.MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject IMoviesRepo repo
 @inject NavigationManager Nav
 
 <PageTitle>Edit movie</PageTitle>
@@ -16,7 +17,7 @@
 }
 else
 {
-    <EditForm Model="@_movie" OnSubmit="@HandleValidSubmit">
+    <EditForm Model="@_movie" OnSubmit="@HandleSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -49,12 +50,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _movie = await Db.Movies.FirstOrDefaultAsync(m => m.Id == id);
+        _movie = await repo.GetAsync(id);
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleSubmit()
     {
-        await Db.SaveChangesAsync();
+        if (_movie != null)
+        {
+            await repo.UpdateAsync(_movie);
+        }
+
         Nav.NavigateTo("/movies");
     }
 

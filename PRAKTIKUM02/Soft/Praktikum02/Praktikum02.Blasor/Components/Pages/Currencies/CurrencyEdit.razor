@@ -2,7 +2,8 @@
 @page "/currencies/edit/{id:guid}"
 @using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
-@inject MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICurrenciesRepo repo
 @inject NavigationManager Nav
 
 <h1>Edit currency</h1>
@@ -55,7 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _currency = await Db.Currencies.FindAsync(id);
+        _currency = await repo.GetAsync(id);
 
         if (_currency != null)
             adapter = new EditorAdapter(_currency);
@@ -63,7 +64,11 @@
 
     private async Task HandleSubmit()
     {
-        await Db.SaveChangesAsync();
+        if (_currency != null)
+        {
+            await repo.UpdateAsync(_currency);
+        }
+
         Nav.NavigateTo("/currencies");
     }
 

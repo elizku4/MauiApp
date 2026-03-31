@@ -3,7 +3,8 @@
 @using Microsoft.EntityFrameworkCore
 @using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
-@inject Praktikum02.Blasor.Data.MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject IMoviesRepo repo
 <PageTitle>Movies</PageTitle>
 
 <h1>Movies</h1>
@@ -46,10 +47,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _movies = await Db.Movies
-            .AsNoTracking()
-            .OrderBy(m => m.Title)
-            .ToListAsync();
+        _movies = (await repo.GetOrderedAsync()).ToList();
     }
-
 }

@@ -3,7 +3,8 @@
 @using Microsoft.EntityFrameworkCore
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Components.Shared
-@inject Praktikum02.Blasor.Data.MovieContext Db
+@using Praktikum02.Blasor.Domain
+@inject ICurrenciesRepo repo
 
 <PageTitle>Currencies</PageTitle>
 
@@ -55,9 +56,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _currencies = await Db.Currencies
-            .AsNoTracking()
-            .OrderBy(c => c.Code)
-            .ToListAsync();
+        _currencies = (await repo.GetOrderedAsync()).ToList();
     }
 }

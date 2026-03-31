@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Praktikum02.Blasor.Data;
 using Praktikum02.Blasor.Components;
-
+using Praktikum02.Blasor.Domain;
+using Praktikum02.Blasor.Infra;
 namespace Praktikum02.Blasor
 {
     public class Program
@@ -17,7 +18,9 @@ namespace Praktikum02.Blasor
             builder.Services.AddDbContext<MovieContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("MovieContext")
         ?? "Data Source=movies.db"));
-
+        builder.Services.AddScoped<ICountriesRepo, CountriesRepo>();
+        builder.Services.AddScoped<ICurrenciesRepo, CurrenciesRepo>();
+        builder.Services.AddScoped<IMoviesRepo, MoviesRepo>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -35,8 +38,9 @@ namespace Praktikum02.Blasor
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
-
+        
             app.Run();
         }
+        
     }
 }
