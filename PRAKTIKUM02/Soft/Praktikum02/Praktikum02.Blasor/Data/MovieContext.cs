@@ -11,6 +11,9 @@ public class MovieContext : DbContext
     }
 
     public DbSet<Movie> Movies => Set<Movie>();
+    public DbSet<Money> Monies => Set<Money>();
     public DbSet<Currency> Currencies { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<CountryCurrency> CountryCurrencies => Set<CountryCurrency>();
+
 }

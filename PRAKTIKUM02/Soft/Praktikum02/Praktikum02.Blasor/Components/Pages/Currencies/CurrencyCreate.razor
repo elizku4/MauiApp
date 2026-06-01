@@ -1,65 +1,27 @@
 ﻿@rendermode InteractiveServer
 @page "/currencies/create"
-@using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICurrenciesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Add currency</h1>
-
-<EditForm Model="@_currency" OnSubmit="@HandleSubmit">
-
-    @foreach (var prop in adapter.Properties)
-    {
-        if (prop.PropInfo.Name == "Id"
-        || prop.PropInfo.Name == "Timestamp"
-        || prop.PropInfo.Name == "ValidFrom"
-        || prop.PropInfo.Name == "ValidTo")
-            continue;
-
-        <div class="mb-3">
-            <label>@prop.PropInfo.Name</label>
-
-            @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
-            {
-                <input class="form-control"
-                       value="@prop.PropValue"
-                       @onchange="e =>
-                       {
-                           if (DateTime.TryParse(e.Value?.ToString(), out var dt))
-                               prop.SetValue(dt);
-                       }" />
-            }
-            else
-            {
-                <input class="form-control"
-                       value="@prop.PropValue"
-                       @onchange="e => prop.SetValue(e.Value?.ToString())" />
-            }
-        </div>
-    }
-
-    <button class="btn btn-success" type="submit">Save</button>
-    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-
-</EditForm>
+<MyCreatePage Entity="@item"
+              EntityTitle="Currency"
+              BasePath="/currencies"
+              OnValidSubmit="add" />
 
 @code {
-    private Currency _currency;
-    private EditorAdapter adapter;
+    private Currency item { get; set; } = new();
 
     protected override void OnInitialized()
     {
-        _currency = new Currency();
-        adapter = new EditorAdapter(_currency);
+        item.ValidFrom = DateTime.Today;
+        item.ValidTo = DateTime.Today;
     }
 
-    private async Task HandleSubmit()
+    private async Task add()
     {
-        await repo.CreateAsync(_currency);
-        Nav.NavigateTo("/currencies");
+        await repo.CreateAsync(item);
+        NavigationManager.NavigateTo("/currencies");
     }
-
-    private void Cancel() => Nav.NavigateTo("/currencies");
 }

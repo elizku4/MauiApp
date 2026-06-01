@@ -1,86 +1,26 @@
 ﻿@rendermode InteractiveServer
 @page "/movies/create"
-@using Praktikum02.Blasor.Components.Shared
 @using Praktikum02.Blasor.Data
-@using Praktikum02.Aids
 @using Praktikum02.Blasor.Domain
 @inject IMoviesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<PageTitle>Add movie</PageTitle>
-
-<h1>Add movie</h1>
-
-<EditForm Model="@_movie" FormName="CreateMovie" OnSubmit="@HandleSubmit">
-
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    @foreach (var prop in adapter.Properties)
-    {
-        if (prop.PropInfo.Name == "Id"
-        || prop.PropInfo.Name == "Timestamp"
-        || prop.PropInfo.Name == "ValidTo"
-        || prop.PropInfo.Name == "ValidFrom")
-            continue;
-
-        <div class="mb-3">
-            <label>@prop.PropInfo.Name</label>
-
-            @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
-            {
-                <input class="form-control"
-                       value="@prop.PropValue"
-                       @onchange="e =>
-                       {
-                           if (DateTime.TryParse(e.Value?.ToString(), out var dt))
-                               prop.SetValue(dt);
-                       }" />
-            }
-            else if (prop.PropType == typeof(decimal) || prop.PropType == typeof(decimal?))
-            {
-                <input type="number" class="form-control"
-                       value="@prop.PropValue"
-                       @onchange="e =>
-                       {
-                           if (decimal.TryParse(e.Value?.ToString(), out var d))
-                               prop.SetValue(d);
-                       }" />
-            }
-            else
-            {
-                <input class="form-control"
-                       value="@prop.PropValue"
-                       @onchange="e => prop.SetValue(e.Value?.ToString())" />
-            }
-        </div>
-    }
-    <button class="btn btn-success" type="submit">Save</button>
-    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-</EditForm>
+<MyCreatePage Entity="@item"
+              EntityTitle="Movie"
+              BasePath="/movies"
+              OnValidSubmit="add" />
 
 @code {
-    private async Task HandleSubmit()
-    {
-        await repo.CreateAsync(_movie);
-        Nav.NavigateTo("/movies");
-    }
-
-    private void Cancel()
-    {
-        Nav.NavigateTo("/movies");
-    }
-
-    private Movie _movie;
-    private EditorAdapter adapter;
+    private Movie item { get; set; } = new();
 
     protected override void OnInitialized()
     {
-        _movie = new Movie
-        {
-            ReleaseDate = DateTime.Today
-        };
+        item.ReleaseDate = DateTime.Today;
+    }
 
-        adapter = new EditorAdapter(_movie);
+    private async Task add()
+    {
+        await repo.CreateAsync(item);
+        NavigationManager.NavigateTo("/movies");
     }
 }
-

@@ -1,0 +1,27 @@
+﻿@rendermode InteractiveServer
+@page "/monies/create"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject IMoniesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyCreatePage Entity="@item"
+              EntityTitle="Money"
+              BasePath="/monies"
+              OnValidSubmit="add" />
+
+@code {
+    private Money item { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        item.ValidFrom = DateTime.Today;
+        item.ValidTo = DateTime.Today;
+    }
+
+    private async Task add()
+    {
+        await repo.CreateAsync(item);
+        NavigationManager.NavigateTo("/monies");
+    }
+}

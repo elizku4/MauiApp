@@ -49,7 +49,65 @@ namespace Praktikum02.Aids
 
         public void SetValue(object value)
         {
-            Prop.SetValue(item, value);
+            if (value is null)
+            {
+                Prop.SetValue(item, null);
+                return;
+            }
+
+            var text = value.ToString();
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                if (Nullable.GetUnderlyingType(PropType) != null || !PropType.IsValueType)
+                {
+                    Prop.SetValue(item, null);
+                }
+                else
+                {
+                    Prop.SetValue(item, Activator.CreateInstance(PropType));
+                }
+
+                return;
+            }
+
+            var targetType = UnderlyingType;
+            object convertedValue;
+
+            if (targetType == typeof(string))
+            {
+                convertedValue = text;
+            }
+            else if (targetType == typeof(Guid))
+            {
+                convertedValue = Guid.Parse(text);
+            }
+            else if (targetType == typeof(int))
+            {
+                convertedValue = int.Parse(text);
+            }
+            else if (targetType == typeof(double))
+            {
+                convertedValue = double.Parse(text);
+            }
+            else if (targetType == typeof(decimal))
+            {
+                convertedValue = decimal.Parse(text);
+            }
+            else if (targetType == typeof(DateTime))
+            {
+                convertedValue = DateTime.Parse(text);
+            }
+            else if (targetType == typeof(bool))
+            {
+                convertedValue = bool.Parse(text);
+            }
+            else
+            {
+                convertedValue = Convert.ChangeType(text, targetType);
+            }
+
+            Prop.SetValue(item, convertedValue);
         }
     }
 }

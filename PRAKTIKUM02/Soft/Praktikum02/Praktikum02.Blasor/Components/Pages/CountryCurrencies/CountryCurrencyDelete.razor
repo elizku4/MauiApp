@@ -1,0 +1,36 @@
+﻿@rendermode InteractiveServer
+@page "/countrycurrencies/delete"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject ICountryCurrenciesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyDeletePage PageTitleText="Delete Country Currency"
+              EntityTitle="Country Currency"
+              Entity="@item"
+              BasePath="/countrycurrencies"
+              OnValidSubmit="delete" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private CountryCurrency? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/countrycurrencies");
+            return;
+        }
+    }
+
+    private async Task delete()
+    {
+        await repo.DeleteAsync(item!.Id);
+        NavigationManager.NavigateTo("/countrycurrencies");
+    }
+}

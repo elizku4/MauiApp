@@ -35,7 +35,7 @@ else
                     <td>@c.Name</td>
                     <td class="text-nowrap">
                         <NavLink class="btn btn-sm btn-primary me-1" href="@($"/countries/edit/{c.Id}")">Edit</NavLink>
-                        <NavLink class="btn btn-sm btn-secondary me-1" href="@($"/countries/details/{c.Id}")">Details</NavLink>
+                        <NavLink class="btn btn-sm btn-secondary ms-1" href="@($"/countries/details?id={c.Id}")">Details</NavLink>
                         <NavLink class="btn btn-sm btn-danger" href="@($"/countries/delete/{c.Id}")">Delete</NavLink>
                     </td>
                 </tr>

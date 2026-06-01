@@ -1,0 +1,11 @@
+﻿@rendermode InteractiveServer
+@page "/monies"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject IMoniesRepo repo
+
+<MyIndexPage TItem="Money"
+             PageTitleText="Monies"
+             EntityTitle="Money"
+             Repo="@repo"
+             BasePath="/monies" />

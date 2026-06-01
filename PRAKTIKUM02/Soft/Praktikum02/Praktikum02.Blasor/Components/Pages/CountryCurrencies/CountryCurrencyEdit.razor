@@ -1,0 +1,37 @@
+﻿@rendermode InteractiveServer
+@page "/countrycurrencies/edit"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject ICountryCurrenciesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyEditPage PageTitleText="Edit Country Currency"
+            EntityTitle="Country Currency"
+            Entity="@item"
+            BasePath="/countrycurrencies"
+            EntityId="@Id"
+            OnValidSubmit="update" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private CountryCurrency? item { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        item ??= await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/countrycurrencies");
+            return;
+        }
+    }
+
+    private async Task update()
+    {
+        await repo.UpdateAsync(item!);
+        NavigationManager.NavigateTo("/countrycurrencies");
+    }
+}

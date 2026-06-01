@@ -1,70 +1,37 @@
 ﻿@rendermode InteractiveServer
-@page "/movies/edit/{id:guid}"
-@using Microsoft.EntityFrameworkCore
-@using Praktikum02.Blasor.Components.Shared
+@page "/movies/edit"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject IMoviesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<PageTitle>Edit movie</PageTitle>
-
-<h1>Edit movie</h1>
-
-@if (_movie == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <EditForm Model="@_movie" OnSubmit="@HandleSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <MyEditItem Label="Title">
-            <InputText class="form-control" @bind-Value="_movie.Title" />
-            <ValidationMessage For="@(() => _movie.Title)" />
-        </MyEditItem>
-
-        <MyEditItem Label="Release date">
-            <InputDate class="form-control" @bind-Value="_movie.ReleaseDate" />
-        </MyEditItem>
-
-        <MyEditItem Label="Genre">
-            <InputText class="form-control" @bind-Value="_movie.Genre" />
-        </MyEditItem>
-
-        <MyEditItem Label="Price">
-            <InputNumber class="form-control" @bind-Value="_movie.Price" />
-        </MyEditItem>
-
-        <button class="btn btn-success" type="submit">Save</button>
-        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-    </EditForm>
-}
+<MyEditPage PageTitleText="Edit Movie"
+            EntityTitle="@item?.Title"
+            Entity="@item"
+            BasePath="/movies"
+            EntityId="@Id"
+            OnValidSubmit="update" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Movie? _movie;
+    private Movie? item { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _movie = await repo.GetAsync(id);
-    }
+        item ??= await repo.GetAsync(Id);
 
-    private async Task HandleSubmit()
-    {
-        if (_movie != null)
+        if (item is null)
         {
-            await repo.UpdateAsync(_movie);
+            NavigationManager.NavigateTo("/movies");
+            return;
         }
-
-        Nav.NavigateTo("/movies");
     }
 
-    private void Cancel()
+    private async Task update()
     {
-        Nav.NavigateTo("/movies");
+        await repo.UpdateAsync(item!);
+        NavigationManager.NavigateTo("/movies");
     }
 }

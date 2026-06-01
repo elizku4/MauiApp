@@ -1,31 +1,30 @@
 ﻿@rendermode InteractiveServer
-@page "/currencies/details/{id:guid}"
-
+@page "/currencies/details"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICurrenciesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Currency details</h1>
-
-@if (_currency != null)
-{
-    <p><b>Code:</b> @_currency.Code</p>
-    <p><b>Name:</b> @_currency.Name</p>
-    <p><b>Symbol:</b> @_currency.Symbol</p>
-
-    <button class="btn btn-secondary" @onclick="Back">Back</button>
-}
+<MyDetailsPage PageTitleText="Details Currency"
+               EntityTitle="Currency"
+               Entity="@item"
+               EntityId="@item?.Id"
+               BasePath="/currencies" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Currency? _currency;
+    private Currency? item;
 
     protected override async Task OnInitializedAsync()
     {
-        _currency = await repo.GetAsync(id);
-    }
+        item = await repo.GetAsync(Id);
 
-    private void Back() => Nav.NavigateTo("/currencies");
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/currencies");
+            return;
+        }
+    }
 }

@@ -1,42 +1,30 @@
 ﻿@rendermode InteractiveServer
-@page "/movies/details/{id:guid}"
-@using Microsoft.EntityFrameworkCore
-@using Praktikum02.Blasor.Components.Shared
+@page "/movies/details"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject IMoviesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<PageTitle>Movie details</PageTitle>
-
-<h1>Movie details</h1>
-
-@if (_movie == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <MyViewItem Label="Title" Value="@_movie.Title" />
-    <MyViewItem Label="Release date" Value="@_movie.ReleaseDate.ToString("yyyy-MM-dd")" />
-    <MyViewItem Label="Genre" Value="@_movie.Genre" />
-    <MyViewItem Label="Price" Value="@_movie.Price.ToString()" />
-
-    <button class="btn btn-secondary mt-3" @onclick="Back">Back</button>
-}
+<MyDetailsPage PageTitleText="Details Movie"
+               EntityTitle="Movie"
+               Entity="@item"
+               EntityId="@item?.Id"
+               BasePath="/movies" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Movie? _movie;
+    private Movie? item;
 
     protected override async Task OnInitializedAsync()
     {
-        _movie = await repo.GetAsync(id);
-    }
+        item = await repo.GetAsync(Id);
 
-    private void Back()
-    {
-        Nav.NavigateTo("/movies");
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/movies");
+            return;
+        }
     }
 }

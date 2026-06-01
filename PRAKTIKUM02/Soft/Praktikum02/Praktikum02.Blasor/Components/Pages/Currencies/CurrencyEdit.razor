@@ -1,76 +1,37 @@
 ﻿@rendermode InteractiveServer
-@page "/currencies/edit/{id:guid}"
-@using Praktikum02.Aids
+@page "/currencies/edit"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICurrenciesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Edit currency</h1>
-
-@if (_currency != null && adapter != null)
-{
-    <EditForm Model="@_currency" OnSubmit="@HandleSubmit">
-
-        @foreach (var prop in adapter.Properties)
-        {
-            if (prop.PropInfo.Name == "Id"
-            || prop.PropInfo.Name == "Timestamp"
-            || prop.PropInfo.Name == "ValidFrom"
-            || prop.PropInfo.Name == "ValidTo")
-                continue;
-
-            <div class="mb-3">
-                <label>@prop.PropInfo.Name</label>
-
-                @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
-                {
-                    <input class="form-control"
-                           value="@prop.PropValue"
-                           @onchange="e =>
-                           {
-                               if (DateTime.TryParse(e.Value?.ToString(), out var dt))
-                                   prop.SetValue(dt);
-                           }" />
-                }
-                else
-                {
-                    <input class="form-control"
-                           value="@prop.PropValue"
-                           @onchange="e => prop.SetValue(e.Value?.ToString())" />
-                }
-            </div>
-        }
-
-        <button class="btn btn-success" type="submit">Save</button>
-        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-
-    </EditForm>
-}
+<MyEditPage PageTitleText="Edit Currency"
+            EntityTitle="@item?.Name"
+            Entity="@item"
+            BasePath="/currencies"
+            EntityId="@Id"
+            OnValidSubmit="update" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Currency? _currency;
-    private EditorAdapter? adapter;
+    private Currency? item { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _currency = await repo.GetAsync(id);
+        item ??= await repo.GetAsync(Id);
 
-        if (_currency != null)
-            adapter = new EditorAdapter(_currency);
-    }
-
-    private async Task HandleSubmit()
-    {
-        if (_currency != null)
+        if (item is null)
         {
-            await repo.UpdateAsync(_currency);
+            NavigationManager.NavigateTo("/currencies");
+            return;
         }
-
-        Nav.NavigateTo("/currencies");
     }
 
-    private void Cancel() => Nav.NavigateTo("/currencies");
+    private async Task update()
+    {
+        await repo.UpdateAsync(item!);
+        NavigationManager.NavigateTo("/currencies");
+    }
 }

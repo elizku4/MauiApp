@@ -1,0 +1,11 @@
+﻿@rendermode InteractiveServer
+@page "/countrycurrencies"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject ICountryCurrenciesRepo repo
+
+<MyIndexPage TItem="CountryCurrency"
+             PageTitleText="Country Currencies"
+             EntityTitle="Country Currency"
+             Repo="@repo"
+             BasePath="/countrycurrencies" />

@@ -1,0 +1,149 @@
+﻿@typeparam TItem
+@using System.Reflection
+
+<PageTitle>@PageTitleText</PageTitle>
+
+<h1>@PageTitleText</h1>
+
+<a class="btn btn-primary mb-3" href="@($"{BasePath}/create")">
+    Add @EntityTitle
+</a>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else if (items == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var prop in VisibleProperties)
+                {
+                    <th>@prop.Name</th>
+                }
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in items)
+            {
+                var id = GetId(item);
+
+                <tr>
+                    @foreach (var prop in VisibleProperties)
+                    {
+                        <td>@FormatValue(prop.GetValue(item))</td>
+                    }
+
+                    <td class="text-end">
+                        <NavLink class="btn btn-sm btn-primary" href="@($"{BasePath}/edit?id={id}")">Edit</NavLink>
+                        <NavLink class="btn btn-sm btn-secondary ms-1" href="@($"{BasePath}/details?id={id}")">Details</NavLink>
+                        <NavLink class="btn btn-sm btn-danger ms-1" href="@($"{BasePath}/delete?id={id}")">Delete</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public string PageTitleText { get; set; } = "";
+    [Parameter] public string EntityTitle { get; set; } = "";
+    [Parameter] public object? Repo { get; set; }
+    [Parameter] public string BasePath { get; set; } = "";
+
+    private List<TItem>? items;
+    private string? error;
+
+    private List<PropertyInfo> VisibleProperties =>
+        typeof(TItem)
+            .GetProperties()
+            .Where(p => p.Name != "Id"
+                     && p.Name != "Timestamp")
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        if (Repo == null)
+        {
+            error = "Repo is null.";
+            return;
+        }
+
+        var method = Repo.GetType().GetMethod("GetOrderedAsync");
+
+        if (method == null)
+        {
+            error = $"Method GetOrderedAsync was not found in {Repo.GetType().Name}.";
+            return;
+        }
+
+        var result = method.Invoke(Repo, null);
+
+        if (result is not Task task)
+        {
+            error = "GetOrderedAsync did not return Task.";
+            return;
+        }
+
+        await task;
+
+        var resultProperty = task.GetType().GetProperty("Result");
+
+        if (resultProperty == null)
+        {
+            error = "Task does not have Result.";
+            return;
+        }
+
+        var value = resultProperty.GetValue(task);
+
+        if (value is IEnumerable<TItem> list)
+        {
+            items = list.ToList();
+        }
+        else
+        {
+            error = "Result is not IEnumerable.";
+        }
+    }
+
+    private static string GetId(TItem item)
+    {
+        var prop = typeof(TItem).GetProperty("Id");
+        var value = prop?.GetValue(item);
+
+        return value?.ToString() ?? "";
+    }
+
+    private static string FormatValue(object? value)
+    {
+        if (value == null)
+            return "";
+
+        if (value is DateTime date)
+            return date == default ? "" : date.ToString("dd.MM.yyyy");
+
+        if (value is double d)
+            return d.ToString("0.##");
+
+        if (value is decimal m)
+            return m.ToString("0.##");
+
+        if (value is Guid g)
+            return g == Guid.Empty ? "" : g.ToString();
+
+        return value.ToString() ?? "";
+    }
+}

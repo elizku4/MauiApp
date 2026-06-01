@@ -1,30 +1,30 @@
 ﻿@rendermode InteractiveServer
-@page "/countries/details/{id:guid}"
-
+@page "/countries/details"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
-@inject ICountriesRepo repo 
-@inject NavigationManager Nav
+@inject ICountriesRepo repo
+@inject NavigationManager NavigationManager
 
-<h1>Country details</h1>
-
-@if (_country != null)
-{
-    <p><b>Code:</b> @_country.Code</p>
-    <p><b>Name:</b> @_country.Name</p>
-
-    <button class="btn btn-secondary" @onclick="Back">Back</button>
-}
+<MyDetailsPage PageTitleText="Details Country"
+               EntityTitle="Country"
+               Entity="@item"
+               EntityId="@item?.Id"
+               BasePath="/countries" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Country? _country;
+    private Country? item;
 
     protected override async Task OnInitializedAsync()
     {
-        _country = await repo.GetAsync(id);
-    }
+        item = await repo.GetAsync(Id);
 
-    private void Back() => Nav.NavigateTo("/countries");
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/countries");
+            return;
+        }
+    }
 }

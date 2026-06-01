@@ -1,0 +1,37 @@
+﻿@rendermode InteractiveServer
+@page "/monies/edit"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject IMoniesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyEditPage PageTitleText="Edit Money"
+            EntityTitle="Money"
+            Entity="@item"
+            BasePath="/monies"
+            EntityId="@Id"
+            OnValidSubmit="update" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private Money? item { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        item ??= await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/monies");
+            return;
+        }
+    }
+
+    private async Task update()
+    {
+        await repo.UpdateAsync(item!);
+        NavigationManager.NavigateTo("/monies");
+    }
+}

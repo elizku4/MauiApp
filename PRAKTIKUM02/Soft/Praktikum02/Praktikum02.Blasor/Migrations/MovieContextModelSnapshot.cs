@@ -24,14 +24,9 @@ namespace Praktikum02.Blasor.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Details")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<byte[]>("Timestamp")
@@ -48,6 +43,35 @@ namespace Praktikum02.Blasor.Migrations
                     b.ToTable("Countries");
                 });
 
+            modelBuilder.Entity("Praktikum02.Blasor.Data.CountryCurrency", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CountryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Timestamp")
+                        .HasColumnType("BLOB");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CountryCurrencies");
+                });
+
             modelBuilder.Entity("Praktikum02.Blasor.Data.Currency", b =>
                 {
                     b.Property<Guid>("Id")
@@ -55,14 +79,9 @@ namespace Praktikum02.Blasor.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Details")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Symbol")
@@ -80,6 +99,32 @@ namespace Praktikum02.Blasor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+                });
+
+            modelBuilder.Entity("Praktikum02.Blasor.Data.Money", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Timestamp")
+                        .HasColumnType("BLOB");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Monies");
                 });
 
             modelBuilder.Entity("Praktikum02.Blasor.Data.Movie", b =>

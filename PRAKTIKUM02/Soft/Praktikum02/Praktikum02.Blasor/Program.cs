@@ -21,6 +21,8 @@ namespace Praktikum02.Blasor
         builder.Services.AddScoped<ICountriesRepo, CountriesRepo>();
         builder.Services.AddScoped<ICurrenciesRepo, CurrenciesRepo>();
         builder.Services.AddScoped<IMoviesRepo, MoviesRepo>();
+            builder.Services.AddScoped<IMoniesRepo, MoniesRepo>();
+            builder.Services.AddScoped<ICountryCurrenciesRepo, CountryCurrenciesRepo>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

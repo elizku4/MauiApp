@@ -1,0 +1,81 @@
+﻿@using Praktikum02.Aids
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Create @EntityTitle</PageTitle>
+
+<h1>Create @EntityTitle</h1>
+
+@if (Entity == null || adapter == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@Entity" OnSubmit="@HandleSubmit">
+
+        @foreach (var prop in adapter.Properties)
+        {
+            if (prop.PropInfo.Name == "Id"
+                || prop.PropInfo.Name == "Timestamp")
+                continue;
+
+            <div class="mb-3">
+                <label class="form-label">@prop.PropInfo.Name</label>
+
+                @if (prop.PropType == typeof(DateTime) || prop.PropType == typeof(DateTime?))
+                {
+                    <input class="form-control"
+                           type="date"
+                           value="@FormatDate(prop.PropValue)"
+                           @onchange="e =>
+                                               {
+                                                   if (DateTime.TryParse(e.Value?.ToString(), out var dt))
+                                                   {
+                                                       prop.SetValue(dt);
+                                                   }
+                                               }" />
+                }
+                else
+                {
+                    <input class="form-control"
+                           value="@prop.PropValue"
+                           @onchange="e => prop.SetValue(e.Value?.ToString())" />
+                }
+            </div>
+        }
+
+        <button class="btn btn-success" type="submit">Save</button>
+        <a class="btn btn-secondary ms-2" href="@BasePath">Cancel</a>
+
+    </EditForm>
+}
+
+@code {
+    [Parameter] public object? Entity { get; set; }
+    [Parameter] public string EntityTitle { get; set; } = "";
+    [Parameter] public string BasePath { get; set; } = "/";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    private EditorAdapter? adapter;
+
+    protected override void OnParametersSet()
+    {
+        if (Entity != null)
+        {
+            adapter = new EditorAdapter(Entity);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        await OnValidSubmit.InvokeAsync();
+    }
+
+    private static string FormatDate(object? value)
+    {
+        if (value is DateTime date)
+            return date.ToString("yyyy-MM-dd");
+
+        return "";
+    }
+}

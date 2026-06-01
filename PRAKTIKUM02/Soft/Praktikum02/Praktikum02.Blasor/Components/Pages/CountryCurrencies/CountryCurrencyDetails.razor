@@ -1,0 +1,30 @@
+﻿@rendermode InteractiveServer
+@page "/countrycurrencies/details"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject ICountryCurrenciesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyDetailsPage PageTitleText="Details Country Currency"
+               EntityTitle="Country Currency"
+               Entity="@item"
+               EntityId="@item?.Id"
+               BasePath="/countrycurrencies" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private CountryCurrency? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/countrycurrencies");
+            return;
+        }
+    }
+}

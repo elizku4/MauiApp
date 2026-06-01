@@ -1,36 +1,36 @@
 ﻿@rendermode InteractiveServer
-@page "/currencies/delete/{id:guid}"
-
+@page "/currencies/delete"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICurrenciesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Delete currency</h1>
-
-@if (_currency != null)
-{
-    <p>Delete <b>@_currency.Code</b> - @_currency.Name ?</p>
-
-    <button class="btn btn-danger" @onclick="Delete">Delete</button>
-    <button class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
-}
+<MyDeletePage PageTitleText="Delete Currency"
+              EntityTitle="Currency"
+              Entity="@item"
+              BasePath="/currencies"
+              OnValidSubmit="delete" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Currency? _currency;
+    private Currency? item;
 
     protected override async Task OnInitializedAsync()
     {
-        _currency = await repo.GetAsync(id);
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/currencies");
+            return;
+        }
     }
 
-    private async Task Delete()
+    private async Task delete()
     {
-        await repo.DeleteAsync(id);
-        Nav.NavigateTo("/currencies");
+        await repo.DeleteAsync(item!.Id);
+        NavigationManager.NavigateTo("/currencies");
     }
-
-    private void Cancel() => Nav.NavigateTo("/currencies");
 }

@@ -1,0 +1,27 @@
+﻿@rendermode InteractiveServer
+@page "/countrycurrencies/create"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject ICountryCurrenciesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyCreatePage Entity="@item"
+              EntityTitle="Country Currency"
+              BasePath="/countrycurrencies"
+              OnValidSubmit="add" />
+
+@code {
+    private CountryCurrency item { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        item.ValidFrom = DateTime.Today;
+        item.ValidTo = DateTime.Today;
+    }
+
+    private async Task add()
+    {
+        await repo.CreateAsync(item);
+        NavigationManager.NavigateTo("/countrycurrencies");
+    }
+}

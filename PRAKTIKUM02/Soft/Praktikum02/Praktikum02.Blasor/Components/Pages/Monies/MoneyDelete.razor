@@ -1,0 +1,36 @@
+﻿@rendermode InteractiveServer
+@page "/monies/delete"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject IMoniesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyDeletePage PageTitleText="Delete Money"
+              EntityTitle="Money"
+              Entity="@item"
+              BasePath="/monies"
+              OnValidSubmit="delete" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private Money? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/monies");
+            return;
+        }
+    }
+
+    private async Task delete()
+    {
+        await repo.DeleteAsync(item!.Id);
+        NavigationManager.NavigateTo("/monies");
+    }
+}

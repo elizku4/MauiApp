@@ -1,0 +1,63 @@
+﻿@using System.Reflection
+
+<PageTitle>@PageTitleText</PageTitle>
+
+<h1>@PageTitleText</h1>
+
+@if (Entity == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@FormatValue(EntityId)</dd>
+
+        @foreach (var prop in VisibleProperties)
+        {
+            <dt class="col-sm-2">@prop.Name</dt>
+            <dd class="col-sm-10">@FormatValue(prop.GetValue(Entity))</dd>
+        }
+    </dl>
+
+    <NavLink class="btn btn-primary" href="@($"{BasePath}/edit?id={EntityId}")">Edit</NavLink>
+    <NavLink class="btn btn-secondary ms-2" href="@BasePath">Back</NavLink>
+}
+
+@code {
+    [Parameter] public string PageTitleText { get; set; } = "";
+    [Parameter] public string EntityTitle { get; set; } = "";
+    [Parameter] public object? Entity { get; set; }
+    [Parameter] public object? EntityId { get; set; }
+    [Parameter] public string BasePath { get; set; } = "";
+
+    private List<PropertyInfo> VisibleProperties =>
+        Entity == null
+            ? new List<PropertyInfo>()
+            : Entity.GetType()
+                .GetProperties()
+                .Where(p => p.Name != "Id"
+                         && p.Name != "Timestamp")
+                .ToList();
+
+    private static string FormatValue(object? value)
+    {
+        if (value == null)
+            return "";
+
+        if (value is DateTime date)
+            return date == default ? "" : date.ToString("dd.MM.yyyy");
+
+        if (value is double d)
+            return d.ToString("0.##");
+
+        if (value is decimal m)
+            return m.ToString("0.##");
+
+        if (value is Guid g)
+            return g == Guid.Empty ? "" : g.ToString();
+
+        return value.ToString() ?? "";
+    }
+}

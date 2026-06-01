@@ -1,0 +1,30 @@
+﻿@rendermode InteractiveServer
+@page "/monies/details"
+@using Praktikum02.Blasor.Data
+@using Praktikum02.Blasor.Domain
+@inject IMoniesRepo repo
+@inject NavigationManager NavigationManager
+
+<MyDetailsPage PageTitleText="Details Money"
+               EntityTitle="Money"
+               Entity="@item"
+               EntityId="@item?.Id"
+               BasePath="/monies" />
+
+@code {
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
+
+    private Money? item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/monies");
+            return;
+        }
+    }
+}
