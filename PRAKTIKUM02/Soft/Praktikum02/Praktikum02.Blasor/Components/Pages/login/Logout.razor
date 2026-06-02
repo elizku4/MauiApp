@@ -1,0 +1,18 @@
+﻿@rendermode InteractiveServer
+@page "/logout"
+@using Praktikum02.Blasor.Data
+@inject LoginService LoginService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+<p>Logging out.</p>
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            LoginService.Logout();
+            await JS.InvokeVoidAsync("localStorage.removeItem", "loggedInUser");
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

@@ -1,0 +1,70 @@
+﻿@rendermode InteractiveServer
+@page "/login"
+@using Praktikum02.Blasor.Data
+@inject LoginService LoginService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<PageTitle>Login</PageTitle>
+<h1>Login</h1>
+@if (LoginService.IsLoggedIn)
+{
+    <p>You are logged in as <b>@LoginService.UserName</b>.</p>
+    <button @onclick="Logout">Logout</button>
+}
+else
+{
+    <div class="mb-3">
+        <label>Email</label>
+        <input class="form-control" @bind="email" />
+    </div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input class="form-control" type="password" @bind="password" />
+    </div>
+    <button @onclick="DoLogin">Login</button>
+    <span> | </span>
+    <a href="/register">Register</a>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p>@errorMessage</p>
+    }
+}
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorMessage = "";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !LoginService.IsLoggedIn)
+        {
+            var savedUser = await JS.InvokeAsync<string?>("localStorage.getItem", "loggedInUser");
+
+            if (!string.IsNullOrWhiteSpace(savedUser))
+            {
+                LoginService.RestoreLogin(savedUser);
+                StateHasChanged();
+            }
+        }
+    }
+    private async Task DoLogin()
+    {
+        var result = LoginService.Login(email, password);
+        if (result)
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", "loggedInUser", email);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = "Wrong email or password.";
+        }
+    }
+    private async Task Logout()
+    {
+        LoginService.Logout();
+        await JS.InvokeVoidAsync("localStorage.removeItem", "loggedInUser");
+        NavigationManager.NavigateTo("/");
+    }
+}

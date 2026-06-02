@@ -1,0 +1,71 @@
+﻿@rendermode InteractiveServer
+@page "/register"
+
+@using System.ComponentModel.DataAnnotations
+@using Praktikum02.Blasor.Data
+@inject LoginService LoginService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+<h1>Register</h1>
+<div class="row">
+    <div class="col-lg-6">
+        <EditForm Model="Input" OnValidSubmit="RegisterUser">
+            <DataAnnotationsValidator />
+
+            <h2>Create a new account.</h2>
+            <hr />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label>Email</label>
+                <InputText class="form-control" @bind-Value="Input.Email" />
+                <ValidationMessage For="() => Input.Email" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <InputText class="form-control" type="password" @bind-Value="Input.Password" />
+                <ValidationMessage For="() => Input.Password" />
+            </div>
+            <div class="mb-3">
+                <label>Confirm password</label>
+                <InputText class="form-control" type="password" @bind-Value="Input.ConfirmPassword" />
+                <ValidationMessage For="() => Input.ConfirmPassword" />
+            </div>
+            <button type="submit">Register</button>
+            <span> | </span>
+            <a href="/login">Login</a>
+        </EditForm>
+        @if (!string.IsNullOrWhiteSpace(Message))
+        {
+            <p>@Message</p>
+        }
+    </div>
+</div>
+@code {
+    private InputModel Input { get; set; } = new();
+    private string Message { get; set; } = "";
+    private void RegisterUser()
+    {
+        var result = LoginService.Register(Input.Email, Input.Password);
+
+        if (result)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            Message = "User already exists or data is invalid.";
+        }
+    }
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+        [Required]
+        [StringLength(100, MinimumLength = 4)]
+        public string Password { get; set; } = "";
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+}
