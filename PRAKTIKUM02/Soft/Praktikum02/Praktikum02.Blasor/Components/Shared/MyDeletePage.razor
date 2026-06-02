@@ -22,8 +22,9 @@ else
     </dl>
 
     <EditForm Model="@Entity" OnSubmit="@HandleSubmit">
-        <button class="btn btn-danger" type="submit">Delete</button>
-        <a class="btn btn-secondary ms-2" href="@BasePath">Cancel</a>
+        <button type="submit">Delete</button>
+        <span> | </span>
+        <a href="@BasePath">Cancel</a>
     </EditForm>
 }
 

@@ -1,4 +1,5 @@
-﻿@using Praktikum02.Blasor.Components.Shared
+﻿@using Microsoft.AspNetCore.Components.Routing
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Praktikum02.Blasor</a>
@@ -8,16 +9,55 @@
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <MyNavLink Href="" Match="NavLinkMatch.All" Text="Home" />
-        <MyNavLink Href="movies" Text="Movies" />
-        <MyNavLink Href="currencies" Text="Currencies" />
-        <MyNavLink Href="monies" Text="Monies" />
-        <MyNavLink Href="countrycurrencies" Text="CountryCurrencies" />
+    <nav class="nav flex-column">
 
-        <MyNavLink Href="counter" Text="Counter" />
-        <MyNavLink Href="weather" Text="Weather" />
-        <MyNavLink Href="countries" Text="Countries" />
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="movies">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Movies
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="currencies">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Currencies
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="monies">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Monies
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="countrycurrencies">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Currency Use
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="countries">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Countries
+            </NavLink>
+        </div>
+
     </nav>
 </div>
-

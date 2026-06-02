@@ -1,67 +1,37 @@
 ﻿@rendermode InteractiveServer
-@page "/countries/edit/{id:guid}"
-@using Praktikum02.Aids
-
+@page "/countries/edit"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICountriesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Edit country</h1>
-
-@if (_country != null)
-{
-    <EditForm Model="_country" OnVSubmit="Save">
-        <DataAnnotationsValidator />
-
-        @foreach (var prop in adapter.Properties)
-        {
-            if (prop.PropInfo.Name == "Id" || prop.PropInfo.Name == "Timestamp" || prop.PropInfo.Name == "ValidFrom" ||
-            prop.PropInfo.Name == "ValidTo")
-                continue;
-
-            <div class="mb-3">
-                <label>@prop.PropInfo.Name</label>
-                @if (prop.PropType == typeof(DateTime))
-                {
-                    <input class="form-control"
-                           value="@prop.PropValue"
-                           @onchange="e => prop.SetValue(DateTime.Parse(e.Value.ToString()))" />
-                }
-                else
-                {
-                    <input class="form-control"
-                           value="@prop.PropValue"
-                           @onchange="e => prop.SetValue(e.Value?.ToString())" />
-                }
-            </div>
-        }
-
-        <button class="btn btn-success" type="submit">Save</button>
-        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-    </EditForm>
-}
+<MyEditPage PageTitleText="Edit Country"
+            EntityTitle="@item?.Name"
+            Entity="@item"
+            BasePath="/countries"
+            EntityId="@Id"
+            OnValidSubmit="update" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Country? _country;
+    private Country? item { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _country = await repo.GetAsync(id);
-        if (_country != null)
+        item ??= await repo.GetAsync(Id);
+
+        if (item is null)
         {
-            adapter = new EditorAdapter(_country);
+            NavigationManager.NavigateTo("/countries");
+            return;
         }
     }
 
-    private async Task Save()
+    private async Task update()
     {
-        await repo.UpdateAsync(_country);
-        Nav.NavigateTo("/countries");
+        await repo.UpdateAsync(item!);
+        NavigationManager.NavigateTo("/countries");
     }
-
-    private void Cancel() => Nav.NavigateTo("/countries");
-    private EditorAdapter adapter;
 }

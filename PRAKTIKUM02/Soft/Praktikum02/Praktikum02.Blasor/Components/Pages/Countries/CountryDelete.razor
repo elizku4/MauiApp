@@ -1,37 +1,36 @@
 ﻿@rendermode InteractiveServer
-@page "/countries/delete/{id:guid}"
-
+@page "/countries/delete"
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICountriesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Delete country</h1>
-
-@if (_country != null)
-{
-    <p>Delete <b>@_country.Code</b> - @_country.Name ?</p>
-
-    <button class="btn btn-danger" @onclick="Delete">Delete</button>
-    <button class="btn btn-secondary ms-2" @onclick="Cancel">Cancel</button>
-}
+<MyDeletePage PageTitleText="Delete Country"
+              EntityTitle="Country"
+              Entity="@item"
+              BasePath="/countries"
+              OnValidSubmit="delete" />
 
 @code {
-    [Parameter] public Guid id { get; set; }
+    [SupplyParameterFromQuery]
+    private Guid Id { get; set; }
 
-    private Country? _country;
+    private Country? item;
 
     protected override async Task OnInitializedAsync()
     {
-        _country = await repo.GetAsync(id);
+        item = await repo.GetAsync(Id);
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("/countries");
+            return;
+        }
     }
 
-    private async Task Delete()
+    private async Task delete()
     {
-        await repo.DeleteAsync(id);
-
-        Nav.NavigateTo("/countries");
+        await repo.DeleteAsync(item!.Id);
+        NavigationManager.NavigateTo("/countries");
     }
-
-    private void Cancel() => Nav.NavigateTo("/countries");
 }

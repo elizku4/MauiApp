@@ -1,49 +1,27 @@
 ﻿@rendermode InteractiveServer
 @page "/countries/create"
-@using Praktikum02.Aids
 @using Praktikum02.Blasor.Data
 @using Praktikum02.Blasor.Domain
 @inject ICountriesRepo repo
-@inject NavigationManager Nav
+@inject NavigationManager NavigationManager
 
-<h1>Add country</h1>
-
-<EditForm Model="_country" OnSubmit="Save">
-    <DataAnnotationsValidator />
-
-    @foreach (var prop in adapter.Properties)
-    {
-        if (prop.PropInfo.Name == "Id"
-        || prop.PropInfo.Name == "Timestamp"
-        || prop.PropInfo.Name == "ValidTo"
-        || prop.PropInfo.Name == "ValidFrom")
-            continue;
-
-        <div class="mb-3">
-            <label>@prop.PropInfo.Name</label>
-            <input class="form-control"
-                   value="@prop.PropValue"
-                   @onchange="e => prop.SetValue(e.Value?.ToString())" />
-        </div>
-    }
-    <button class="btn btn-success" type="submit">Save</button>
-    <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancel</button>
-</EditForm>
+<MyCreatePage Entity="@item"
+              EntityTitle="Country"
+              BasePath="/countries"
+              OnValidSubmit="add" />
 
 @code {
-    private Country _country = new();
+    private Country item { get; set; } = new();
 
-    private async Task Save()
-    {
-        await repo.CreateAsync(_country);
-        Nav.NavigateTo("/countries");
-    }
-
-    private void Cancel() => Nav.NavigateTo("/countries");
-    
-    private EditorAdapter adapter;
     protected override void OnInitialized()
     {
-        adapter = new EditorAdapter(_country);
+        item.ValidFrom = DateTime.Today;
+        item.ValidTo = DateTime.Today;
+    }
+
+    private async Task add()
+    {
+        await repo.CreateAsync(item);
+        NavigationManager.NavigateTo("/countries");
     }
 }

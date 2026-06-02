@@ -1,13 +1,19 @@
 ﻿@typeparam TItem
 @using System.Reflection
+@using System.Collections
 
 <PageTitle>@PageTitleText</PageTitle>
 
 <h1>@PageTitleText</h1>
-
-<a class="btn btn-primary mb-3" href="@($"{BasePath}/create")">
-    Add @EntityTitle
-</a>
+<p>
+<a href="@($"{BasePath}/create")">Create New</a>
+</p>
+<div class="mb-3">
+    <input class="form-control"
+           placeholder="Search..."
+           @bind="searchText"
+           @bind:event="oninput" />
+</div>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
@@ -24,34 +30,37 @@ else
             <tr>
                 @foreach (var prop in VisibleProperties)
                 {
-                    <th>@prop.Name</th>
+                    <th style="cursor: pointer" @onclick="() => SortBy(prop.Name)">
+                        @prop.Name @SortIcon(prop.Name)
+                    </th>
                 }
+
                 <th>Actions</th>
             </tr>
         </thead>
 
         <tbody>
-            @foreach (var item in items)
+        @foreach (var item in DisplayItems)
+        {
+          var id = GetId(item);
+           <tr>
+            @foreach (var prop in VisibleProperties)
             {
-                var id = GetId(item);
+             <td>@FormatValue(prop.GetValue(item))</td>
+            }
 
-                <tr>
-                    @foreach (var prop in VisibleProperties)
-                    {
-                        <td>@FormatValue(prop.GetValue(item))</td>
-                    }
-
-                    <td class="text-end">
-                        <NavLink class="btn btn-sm btn-primary" href="@($"{BasePath}/edit?id={id}")">Edit</NavLink>
-                        <NavLink class="btn btn-sm btn-secondary ms-1" href="@($"{BasePath}/details?id={id}")">Details</NavLink>
-                        <NavLink class="btn btn-sm btn-danger ms-1" href="@($"{BasePath}/delete?id={id}")">Delete</NavLink>
+                    <td>
+                        <NavLink href="@($"{BasePath}/edit?id={id}")">Edit</NavLink>
+                        <span> | </span>
+                        <NavLink href="@($"{BasePath}/details?id={id}")">Details</NavLink>
+                        <span> | </span>
+                        <NavLink href="@($"{BasePath}/delete?id={id}")">Delete</NavLink>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
-
 @code {
     [Parameter] public string PageTitleText { get; set; } = "";
     [Parameter] public string EntityTitle { get; set; } = "";
@@ -61,12 +70,52 @@ else
     private List<TItem>? items;
     private string? error;
 
+    private string searchText = "";
+    private string? sortColumn;
+    private bool sortAscending = true;
+
     private List<PropertyInfo> VisibleProperties =>
         typeof(TItem)
             .GetProperties()
             .Where(p => p.Name != "Id"
-                     && p.Name != "Timestamp")
+                     && p.Name != "Timestamp"
+                     && p.GetIndexParameters().Length == 0
+                     && !IsCollectionProperty(p))
             .ToList();
+
+    private IEnumerable<TItem> DisplayItems
+    {
+        get
+        {
+            if (items == null)
+                return new List<TItem>();
+
+            var filteredItems = items
+                .Where(MatchesSearch)
+                .ToList();
+
+            if (string.IsNullOrWhiteSpace(sortColumn))
+                return filteredItems;
+
+            var sortProperty = VisibleProperties
+                .FirstOrDefault(p => p.Name == sortColumn);
+
+            if (sortProperty == null)
+                return filteredItems;
+
+            filteredItems.Sort((firstItem, secondItem) =>
+            {
+                var firstValue = sortProperty.GetValue(firstItem);
+                var secondValue = sortProperty.GetValue(secondItem);
+
+                var result = CompareValues(firstValue, secondValue);
+
+                return sortAscending ? result : -result;
+            });
+
+            return filteredItems;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,7 +155,6 @@ else
             error = "Task does not have Result.";
             return;
         }
-
         var value = resultProperty.GetValue(task);
 
         if (value is IEnumerable<TItem> list)
@@ -118,32 +166,89 @@ else
             error = "Result is not IEnumerable.";
         }
     }
+    private bool MatchesSearch(TItem item)
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+            return true;
+
+        foreach (var prop in VisibleProperties)
+        {
+            var value = FormatValue(prop.GetValue(item));
+
+            if (value.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+    private void SortBy(string columnName)
+    {
+        if (sortColumn == columnName)
+        {
+            sortAscending = !sortAscending;
+        }
+        else
+        {
+            sortColumn = columnName;
+            sortAscending = true;
+        }
+    }
+
+    private string SortIcon(string columnName)
+    {
+        if (sortColumn != columnName)
+            return "";
+        return sortAscending ? "▲" : "▼";
+    }
+
+    private static int CompareValues(object? firstValue, object? secondValue)
+    {
+        if (firstValue == null && secondValue == null)
+            return 0;
+        if (firstValue == null)
+            return -1;
+        if (secondValue == null)
+            return 1;
+        if (firstValue is DateTime firstDate && secondValue is DateTime secondDate)
+            return firstDate.CompareTo(secondDate);
+        if (firstValue is decimal firstDecimal && secondValue is decimal secondDecimal)
+            return firstDecimal.CompareTo(secondDecimal);
+        if (firstValue is double firstDouble && secondValue is double secondDouble)
+            return firstDouble.CompareTo(secondDouble);
+        if (firstValue is int firstInt && secondValue is int secondInt)
+            return firstInt.CompareTo(secondInt);
+        if (firstValue is Guid firstGuid && secondValue is Guid secondGuid)
+            return firstGuid.CompareTo(secondGuid);
+        return string.Compare(
+            FormatValue(firstValue),
+            FormatValue(secondValue),
+            StringComparison.CurrentCultureIgnoreCase);
+    }
 
     private static string GetId(TItem item)
     {
         var prop = typeof(TItem).GetProperty("Id");
         var value = prop?.GetValue(item);
-
         return value?.ToString() ?? "";
     }
-
     private static string FormatValue(object? value)
     {
         if (value == null)
             return "";
-
         if (value is DateTime date)
             return date == default ? "" : date.ToString("dd.MM.yyyy");
-
-        if (value is double d)
-            return d.ToString("0.##");
-
-        if (value is decimal m)
-            return m.ToString("0.##");
-
-        if (value is Guid g)
-            return g == Guid.Empty ? "" : g.ToString();
-
+        if (value is decimal decimalValue)
+            return decimalValue.ToString("0.##");
+        if (value is double doubleValue)
+            return doubleValue.ToString("0.##");
+        if (value is Guid guidValue)
+            return guidValue == Guid.Empty ? "" : guidValue.ToString();
         return value.ToString() ?? "";
+    }
+
+    private static bool IsCollectionProperty(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo.PropertyType == typeof(string))
+            return false;
+        return typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType);
     }
 }

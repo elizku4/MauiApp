@@ -20,9 +20,9 @@ else
             <dd class="col-sm-10">@FormatValue(prop.GetValue(Entity))</dd>
         }
     </dl>
-
-    <NavLink class="btn btn-primary" href="@($"{BasePath}/edit?id={EntityId}")">Edit</NavLink>
-    <NavLink class="btn btn-secondary ms-2" href="@BasePath">Back</NavLink>
+    <NavLink href="@($"{BasePath}/edit?id={EntityId}")">Edit</NavLink>
+    <span> | </span>
+    <NavLink href="@BasePath">Back</NavLink>
 }
 
 @code {
