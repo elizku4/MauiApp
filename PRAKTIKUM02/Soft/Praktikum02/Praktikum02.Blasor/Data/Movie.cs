@@ -5,7 +5,6 @@ public class Movie : DetailedEntity
 {
     [Required]
     public string Title { get; set; } = "";
-
     [DataType(DataType.Date)]
     public DateTime ReleaseDate { get; set; }
 
